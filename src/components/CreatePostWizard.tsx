@@ -11,6 +11,7 @@ const CreatePostWizard = () => {
       </p>
     );
   }
+
   return (
     <div className="space-y-4 text-slate-300">
       <p className="text-center text-base tracking-wide">

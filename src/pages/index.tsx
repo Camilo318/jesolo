@@ -1,9 +1,10 @@
 import { type NextPage } from "next";
 import Head from "next/head";
+import { Avatar } from "@mantine/core";
 
 import CreatePostWizard from "~/components/CreatePostWizard";
 import SessionUI from "~/components/SessionUI";
-import { api } from "~/utils/api";
+import { type RouterOutputs, api } from "~/utils/api";
 
 const Home: NextPage = () => {
   const hello = api.posts.getAll.useQuery();
@@ -17,24 +18,42 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex min-h-screen flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
-        <div className="container flex flex-col items-center gap-12 px-4 py-16 ">
+        <div className="container flex flex-col items-center gap-12 px-4 py-16">
           <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
             <span className="text-[hsl(280,100%,70%)]">Jesolo</span> App
           </h1>
-          <section className="w-full max-w-5xl space-y-4 rounded bg-indigo-50/5 px-8 py-4">
+          <section className="w-full max-w-5xl space-y-4 rounded-lg bg-white/25 px-8 py-4 shadow-md backdrop-blur-sm">
             <SessionUI />
             <CreatePostWizard />
             <div className="grid grid-cols-1 justify-items-center gap-4">
-              {data?.map((post) => (
-                <div key={post.id}>
-                  <span>{post.content}</span>
-                </div>
+              {data?.map(({ post, author }) => (
+                <PostView key={post.id} author={author} post={post} />
               ))}
             </div>
           </section>
         </div>
       </main>
     </>
+  );
+};
+
+type PostWithAuthor = RouterOutputs["posts"]["getAll"][number];
+const PostView = (props: PostWithAuthor) => {
+  const { author, post } = props;
+  return (
+    <div className="flex items-start gap-2 px-4">
+      <div>
+        <Avatar src={author?.profileImageUrl} radius="lg" />
+      </div>
+      <div>
+        <span className="font-bold text-white">{author?.firstName}</span>
+        <> </>
+        <span className="text-sm font-light text-slate-400">
+          @{author?.username}
+        </span>
+        <p>{post.content}</p>
+      </div>
+    </div>
   );
 };
 

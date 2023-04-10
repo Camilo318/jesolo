@@ -1,10 +1,11 @@
-import { Button } from "@mantine/core";
+import { Button, Avatar } from "@mantine/core";
 import { useRouter } from "next/router";
 
-import { useAuth, SignedOut, SignedIn } from "@clerk/nextjs";
+import { useAuth, SignedOut, SignedIn, useUser } from "@clerk/nextjs";
 
 const SessionUI = () => {
   const router = useRouter();
+  const { user } = useUser();
   const { signOut } = useAuth();
   return (
     <div className="flex justify-end">
@@ -21,13 +22,17 @@ const SessionUI = () => {
       </SignedOut>
 
       <SignedIn>
-        <Button
-          onClick={() => {
-            void signOut();
-          }}
-        >
-          Sign out
-        </Button>
+        <div className="flex w-full items-center justify-between">
+          {/* since we are signed in, user will not be undefined */}
+          <Avatar src={user?.profileImageUrl} radius="lg" />
+          <Button
+            onClick={() => {
+              void signOut();
+            }}
+          >
+            Sign out
+          </Button>
+        </div>
       </SignedIn>
     </div>
   );

@@ -25,7 +25,11 @@ const SessionUI = () => {
       <SignedIn>
         <div className="flex w-full items-center justify-between">
           {/* since we are signed in, user will not be undefined */}
-          <Avatar src={user?.profileImageUrl} radius="lg" />
+          <Avatar
+            src={user?.profileImageUrl}
+            radius="lg"
+            alt={`${user?.username ?? "Your"} profile picture`}
+          />
           <Button
             color="violet"
             variant="subtle"

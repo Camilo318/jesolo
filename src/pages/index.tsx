@@ -47,7 +47,7 @@ const Home: NextPage = () => {
             <span className="text-violet-600">Jesolo</span> App
           </h1>
 
-          <section className="relative w-full max-w-3xl space-y-4 rounded-xl border border-white/10 bg-white/20 px-8 py-4 shadow-sm backdrop-blur-md">
+          <section className="glass relative w-full max-w-3xl space-y-4 rounded-xl px-8 py-4">
             <SessionUI />
             <CreatePostWizard />
             <div className="grid grid-cols-1 justify-items-center gap-4">
@@ -67,9 +67,13 @@ const PostView = (props: PostWithAuthor) => {
   const { author, post } = props;
   const timeAgo = dayjs(post.createdAt).fromNow(true);
   return (
-    <div className="flex w-full items-start gap-2 rounded-xl border border-white/10 bg-white/20 px-4 py-4 shadow-sm backdrop-blur-md">
+    <div className="glass flex w-full items-start gap-2 rounded-xl px-4 py-4">
       <div>
-        <Avatar src={author?.profileImageUrl} radius="lg" />
+        <Avatar
+          src={author?.profileImageUrl}
+          radius="lg"
+          alt="post's author profile picture"
+        />
       </div>
       <div>
         <span className="font-bold text-indigo-800">{author?.firstName}</span>

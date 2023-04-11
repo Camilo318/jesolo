@@ -1,10 +1,34 @@
 import { type NextPage } from "next";
 import Head from "next/head";
 import { Avatar } from "@mantine/core";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import updateLocale from "dayjs/plugin/updateLocale";
 
 import CreatePostWizard from "~/components/CreatePostWizard";
 import SessionUI from "~/components/SessionUI";
 import { type RouterOutputs, api } from "~/utils/api";
+
+dayjs.extend(relativeTime);
+dayjs.extend(updateLocale);
+
+dayjs.updateLocale("en", {
+  relativeTime: {
+    future: "in %s",
+    past: "%s ago",
+    s: "%ds",
+    m: "m",
+    mm: "%dm",
+    h: "h",
+    hh: "%dh",
+    d: "d",
+    dd: "%dd",
+    M: "m",
+    MM: "%dm",
+    y: "y",
+    yy: "%dy",
+  },
+});
 
 const Home: NextPage = () => {
   const hello = api.posts.getAll.useQuery();
@@ -41,17 +65,18 @@ const Home: NextPage = () => {
 type PostWithAuthor = RouterOutputs["posts"]["getAll"][number];
 const PostView = (props: PostWithAuthor) => {
   const { author, post } = props;
+  const timeAgo = dayjs(post.createdAt).fromNow(true);
   return (
-    <div className="flex items-start gap-2 rounded-2xl border border-white/10 bg-white/20 px-4 py-4 shadow-sm backdrop-blur-md">
+    <div className="flex w-full items-start gap-2 rounded-xl border border-white/10 bg-white/20 px-4 py-4 shadow-sm backdrop-blur-md">
       <div>
         <Avatar src={author?.profileImageUrl} radius="lg" />
       </div>
       <div>
         <span className="font-bold text-indigo-800">{author?.firstName}</span>
         <> </>
-        <span className="text-sm font-light text-slate-600">
-          @{author?.username}
-        </span>
+        <span className="font-light text-slate-600">@{author?.username}</span>
+        <span className="text-slate-600"> · </span>
+        <span className="font-light text-slate-600">{timeAgo}</span>
         <p>{post.content}</p>
       </div>
     </div>

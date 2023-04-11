@@ -12,7 +12,7 @@ const SessionUI = () => {
       <SignedOut>
         <Button
           type="button"
-          color="violet"
+          color="indigo"
           variant="subtle"
           onClick={() => {
             void router.push("/sign-in");
@@ -31,7 +31,7 @@ const SessionUI = () => {
             alt={`${user?.username ?? "Your"} profile picture`}
           />
           <Button
-            color="violet"
+            color="indigo"
             variant="subtle"
             onClick={() => {
               void signOut();

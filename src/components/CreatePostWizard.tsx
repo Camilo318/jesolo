@@ -4,7 +4,9 @@ import { Input } from "@mantine/core";
 const CreatePostWizard = () => {
   const { isLoaded, isSignedIn, user } = useUser();
 
-  if (!isLoaded || !isSignedIn) {
+  if (!isLoaded) return null;
+
+  if (!isSignedIn) {
     return (
       <p className="text-center text-base tracking-wide text-slate-700">
         Sign in to start posting emojis
@@ -20,7 +22,7 @@ const CreatePostWizard = () => {
 
       <Input.Wrapper
         id="emoji-input"
-        label={<span className="text-indigo-600">Type an emoji</span>}
+        label={<span className="text-indigo-600">Emoji</span>}
       >
         <Input
           placeholder="Your emoji here"

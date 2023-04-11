@@ -6,21 +6,21 @@ const CreatePostWizard = () => {
 
   if (!isLoaded || !isSignedIn) {
     return (
-      <p className="text-center text-base tracking-wide text-slate-300">
+      <p className="text-center text-base tracking-wide text-slate-700">
         Sign in to start posting emojis
       </p>
     );
   }
 
   return (
-    <div className="space-y-4 text-slate-300">
+    <div className="space-y-4 text-slate-700">
       <p className="text-center text-base tracking-wide">
         Hi {user.username}! time to post some emojis 😏
       </p>
 
       <Input.Wrapper
         id="emoji-input"
-        label={<span className="text-indigo-400">Type an emoji</span>}
+        label={<span className="text-indigo-600">Type an emoji</span>}
       >
         <Input
           placeholder="Your emoji here"

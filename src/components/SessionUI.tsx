@@ -12,7 +12,8 @@ const SessionUI = () => {
       <SignedOut>
         <Button
           type="button"
-          color="indigo"
+          color="violet"
+          variant="subtle"
           onClick={() => {
             void router.push("/sign-in");
           }}
@@ -26,6 +27,8 @@ const SessionUI = () => {
           {/* since we are signed in, user will not be undefined */}
           <Avatar src={user?.profileImageUrl} radius="lg" />
           <Button
+            color="violet"
+            variant="subtle"
             onClick={() => {
               void signOut();
             }}

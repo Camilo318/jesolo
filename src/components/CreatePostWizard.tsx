@@ -2,9 +2,15 @@ import { useUser } from "@clerk/nextjs";
 import { Input } from "@mantine/core";
 import { api } from "~/utils/api";
 
-const CreatePostWizard = () => {
+const CreatePostWizard = ({
+  onSuccess,
+}: {
+  onSuccess: () => Promise<unknown>;
+}) => {
   const { isLoaded, isSignedIn, user } = useUser();
-  const createPost = api.posts.create.useMutation();
+  const createPost = api.posts.create.useMutation({
+    onSuccess: onSuccess,
+  });
 
   if (!isLoaded) return null;
 
@@ -37,6 +43,7 @@ const CreatePostWizard = () => {
             });
             e.currentTarget.value = "";
           }}
+          disabled={createPost.isLoading}
         />
       </Input.Wrapper>
     </div>

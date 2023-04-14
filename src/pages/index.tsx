@@ -17,21 +17,25 @@ dayjs.updateLocale("en", {
     future: "in %s",
     past: "%s ago",
     s: "%ds",
-    m: "m",
+    m: "1m",
     mm: "%dm",
-    h: "h",
+    h: "1h",
     hh: "%dh",
-    d: "d",
+    d: "1d",
     dd: "%dd",
-    M: "m",
+    M: "1m",
     MM: "%dm",
-    y: "y",
+    y: "1y",
     yy: "%dy",
   },
 });
 
 const Home: NextPage = () => {
-  const { data, isLoading } = api.posts.getAll.useQuery();
+  const {
+    data,
+    isLoading,
+    refetch: refetchPosts,
+  } = api.posts.getAll.useQuery();
   return (
     <>
       <Head>
@@ -53,7 +57,7 @@ const Home: NextPage = () => {
             ) : (
               <>
                 <SessionUI />
-                <CreatePostWizard />
+                <CreatePostWizard onSuccess={() => refetchPosts()} />
                 <div className="grid grid-cols-1 justify-items-center gap-4">
                   {data?.map(({ post, author }) => (
                     <PostView key={post.id} author={author} post={post} />

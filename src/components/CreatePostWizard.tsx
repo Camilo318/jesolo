@@ -1,8 +1,10 @@
 import { useUser } from "@clerk/nextjs";
 import { Input } from "@mantine/core";
+import { api } from "~/utils/api";
 
 const CreatePostWizard = () => {
   const { isLoaded, isSignedIn, user } = useUser();
+  const createPost = api.posts.create.useMutation();
 
   if (!isLoaded) return null;
 
@@ -28,6 +30,13 @@ const CreatePostWizard = () => {
           placeholder="Your emoji here"
           id="emoji-input"
           className="mt-1"
+          onKeyDown={(e) => {
+            if (e.key !== "Enter") return;
+            createPost.mutate({
+              content: e.currentTarget.value,
+            });
+            e.currentTarget.value = "";
+          }}
         />
       </Input.Wrapper>
     </div>

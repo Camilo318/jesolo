@@ -1,8 +1,12 @@
-// import { z } from "zod";
+import { z } from "zod";
 
 import type { User } from "@clerk/nextjs/dist/api";
 import { clerkClient } from "@clerk/nextjs/server";
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from "~/server/api/trpc";
 
 type AuthorMap = Record<
   string,
@@ -37,4 +41,15 @@ export const postsRouter = createTRPCRouter({
       };
     });
   }),
+
+  create: protectedProcedure
+    .input(z.object({ content: z.string().emoji().min(1).max(280) }))
+    .mutation(({ ctx, input }) => {
+      return ctx.prisma.post.create({
+        data: {
+          content: input.content,
+          authorId: ctx.userId,
+        },
+      });
+    }),
 });

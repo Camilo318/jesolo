@@ -31,9 +31,7 @@ dayjs.updateLocale("en", {
 });
 
 const Home: NextPage = () => {
-  const hello = api.posts.getAll.useQuery();
-  const { data, isLoading } = hello;
-
+  const { data, isLoading } = api.posts.getAll.useQuery();
   return (
     <>
       <Head>

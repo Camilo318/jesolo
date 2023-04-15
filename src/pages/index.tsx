@@ -57,7 +57,7 @@ const Home: NextPage = () => {
             ) : (
               <>
                 <SessionUI />
-                <CreatePostWizard onSuccess={() => refetchPosts()} />
+                <CreatePostWizard onSuccess={refetchPosts} />
                 <div className="grid grid-cols-1 justify-items-center gap-4">
                   {data?.map(({ post, author }) => (
                     <PostView key={post.id} author={author} post={post} />

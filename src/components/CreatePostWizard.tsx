@@ -1,15 +1,11 @@
 import { useUser } from "@clerk/nextjs";
-import { Input } from "@mantine/core";
+import { TextInput } from "@mantine/core";
 import { api } from "~/utils/api";
 
-const CreatePostWizard = ({
-  onSuccess,
-}: {
-  onSuccess: () => Promise<unknown>;
-}) => {
+const CreatePostWizard = <T,>({ onSuccess }: { onSuccess: () => T }) => {
   const { isLoaded, isSignedIn, user } = useUser();
   const createPost = api.posts.create.useMutation({
-    onSuccess: onSuccess,
+    onSuccess: () => onSuccess(),
   });
 
   if (!isLoaded) return null;
@@ -28,24 +24,20 @@ const CreatePostWizard = ({
         Hi {user.username}! time to post some emojis 😏
       </p>
 
-      <Input.Wrapper
+      <TextInput
         id="emoji-input"
         label={<span className="text-indigo-600">Emoji</span>}
-      >
-        <Input
-          placeholder="Your emoji here"
-          id="emoji-input"
-          className="mt-1"
-          onKeyDown={(e) => {
-            if (e.key !== "Enter") return;
-            createPost.mutate({
-              content: e.currentTarget.value,
-            });
-            e.currentTarget.value = "";
-          }}
-          disabled={createPost.isLoading}
-        />
-      </Input.Wrapper>
+        placeholder="Your emoji here"
+        className="mt-1"
+        onKeyDown={(e) => {
+          if (e.key !== "Enter") return;
+          createPost.mutate({
+            content: e.currentTarget.value,
+          });
+          e.currentTarget.value = "";
+        }}
+        disabled={createPost.isLoading}
+      />
     </div>
   );
 };

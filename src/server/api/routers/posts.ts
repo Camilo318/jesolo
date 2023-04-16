@@ -46,9 +46,24 @@ export const postsRouter = createTRPCRouter({
     }, {});
 
     return posts.map((post) => {
+      const author = usersMap[post.authorId];
+      if (!author) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Author for post not found. POST ID: ${post.id}, USER ID: ${post.authorId}`,
+        });
+      }
+
+      if (!author.username) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Author has no GitHub Account: ${author.id}`,
+        });
+      }
+
       return {
         post,
-        author: usersMap[post.authorId],
+        author,
       };
     });
   }),

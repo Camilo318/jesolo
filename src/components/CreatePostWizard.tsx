@@ -1,11 +1,22 @@
 import { useUser } from "@clerk/nextjs";
-import { TextInput } from "@mantine/core";
+import { Loader, TextInput } from "@mantine/core";
+import { toast } from "react-hot-toast";
 import { api } from "~/utils/api";
 
 const CreatePostWizard = <T,>({ onSuccess }: { onSuccess: () => T }) => {
   const { isLoaded, isSignedIn, user } = useUser();
   const createPost = api.posts.create.useMutation({
     onSuccess: () => onSuccess(),
+    onError: (e) => {
+      // fieldErrors is a map where keys are the input params ("content" in our case) and the values are arrays with the error messages
+      const errors = e.data?.zodError?.fieldErrors.content ?? [];
+
+      errors?.forEach((error) => {
+        toast.error(error, {
+          position: "bottom-center",
+        });
+      });
+    },
   });
 
   if (!isLoaded) return null;
@@ -37,6 +48,12 @@ const CreatePostWizard = <T,>({ onSuccess }: { onSuccess: () => T }) => {
           e.currentTarget.value = "";
         }}
         disabled={createPost.isLoading}
+        rightSection={
+          <Loader
+            size="xs"
+            style={{ visibility: createPost.isLoading ? "visible" : "hidden" }}
+          />
+        }
       />
     </div>
   );

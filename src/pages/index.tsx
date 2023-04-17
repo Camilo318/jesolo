@@ -80,7 +80,7 @@ const PostView = (props: PostWithAuthor) => {
   return (
     <div className="glass flex w-full items-start gap-2 rounded-xl px-4 py-4">
       <div>
-        <Link href={`/@${author?.username as string}`}>
+        <Link href={`/${author?.username as string}`}>
           <Avatar
             src={author?.profileImageUrl}
             radius="lg"

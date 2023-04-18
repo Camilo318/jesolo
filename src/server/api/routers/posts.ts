@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
-import type { User } from "@clerk/nextjs/dist/api";
 import { clerkClient } from "@clerk/nextjs/server";
 import {
   createTRPCRouter,
@@ -9,11 +8,10 @@ import {
   publicProcedure,
 } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
-
-type AuthorMap = Record<
-  string,
-  Pick<User, "id" | "username" | "profileImageUrl" | "firstName">
->;
+import {
+  filterUseForClient,
+  type filteredUser,
+} from "~/server/helpers/filterUserForClient";
 
 const ratelimit = new Ratelimit({
   redis: Redis.fromEnv(),
@@ -35,13 +33,8 @@ export const postsRouter = createTRPCRouter({
       userId: posts.map((post) => post.authorId),
     });
 
-    const usersMap = users.reduce((acc: AuthorMap, cu) => {
-      acc[cu.id] = {
-        id: cu.id,
-        username: cu.username,
-        firstName: cu.firstName,
-        profileImageUrl: cu.profileImageUrl,
-      };
+    const usersMap = users.reduce((acc: Record<string, filteredUser>, cu) => {
+      acc[cu.id] = filterUseForClient(cu);
       return acc;
     }, {});
 

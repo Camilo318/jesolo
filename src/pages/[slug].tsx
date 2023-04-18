@@ -8,9 +8,14 @@ const Profile: NextPage = () => {
   const router = useRouter();
 
   const { slug } = router.query;
-  const { data, isLoading } = api.profiles.getProfile.useQuery({
-    username: slug as string,
-  });
+  const { data, isLoading } = api.profiles.getProfile.useQuery(
+    {
+      username: slug as string,
+    },
+    {
+      enabled: !!slug,
+    }
+  );
   if (isLoading) return <Loader />;
   if (!data) return <div>User not found</div>;
 

@@ -3,6 +3,7 @@ import { z } from "zod";
 import { clerkClient } from "@clerk/nextjs/server";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
+import { filterUseForClient } from "~/server/helpers/filterUserForClient";
 
 export const profilesRouter = createTRPCRouter({
   //get user by username
@@ -21,22 +22,6 @@ export const profilesRouter = createTRPCRouter({
         });
       }
 
-      const {
-        username,
-        emailAddresses,
-        firstName,
-        lastName,
-        profileImageUrl,
-        createdAt,
-      } = user;
-
-      return {
-        username,
-        emailAddresses,
-        firstName,
-        lastName,
-        profileImageUrl,
-        createdAt,
-      };
+      return filterUseForClient(user);
     }),
 });

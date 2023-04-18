@@ -44,12 +44,8 @@ const Home: NextPage = () => {
         <meta name="description" content="Jesolo feed" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex flex-col items-center bg-gradient-to-tr from-[#8EC5FC] to-[#E0C3FC]">
+      <main className="flex flex-col items-center">
         <div className="container relative flex min-h-screen flex-col items-center gap-12 px-4 py-16">
-          <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
-            <span className="inline-block text-violet-600">Jesolo</span> App
-          </h1>
-
           <section className="glass relative w-full max-w-3xl flex-grow space-y-4 rounded-xl px-8 py-4">
             {isLoading ? (
               <div className="absolute inset-0 flex h-full w-full items-center justify-center">

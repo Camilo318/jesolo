@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+  @apply bg-gradient-to-tr from-[#8EC5FC] to-[#E0C3FC] bg-no-repeat;
+}
+
 .glass {
   @apply border border-white/20 bg-white/20 shadow-sm backdrop-blur-md;
 }

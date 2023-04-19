@@ -25,7 +25,7 @@ import type {
 
 import { prisma } from "../db";
 
-interface AuthContext {
+export interface AuthContext {
   auth: SignedInAuthObject | SignedOutAuthObject;
 }
 /**
@@ -37,7 +37,7 @@ interface AuthContext {
  * - trpc's `createSSGHelpers` where we don't have req/res
  * @see https://create.t3.gg/en/usage/trpc#-servertrpccontextts
  */
-const createInnerTRPCContext = ({ auth }: AuthContext) => {
+export const createInnerTRPCContext = ({ auth }: AuthContext) => {
   return {
     auth,
     prisma,

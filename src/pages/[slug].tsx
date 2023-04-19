@@ -1,28 +1,33 @@
-import { Loader } from "@mantine/core";
-import { type NextPage } from "next";
+// import { Loader } from "@mantine/core";
+import type { GetStaticPropsContext, InferGetStaticPropsType } from "next";
+import { createServerSideHelpers } from "@trpc/react-query/server";
 import Head from "next/head";
-import { useRouter } from "next/router";
+import superjson from "superjson";
+import { appRouter } from "~/server/api/root";
+import { type AuthContext, createInnerTRPCContext } from "~/server/api/trpc";
 import { api } from "~/utils/api";
 
-const Profile: NextPage = () => {
-  const router = useRouter();
+const Profile = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
+  const { username } = props;
 
-  const { slug } = router.query;
   const { data, isLoading } = api.profiles.getProfile.useQuery(
     {
-      username: slug as string,
+      username,
     },
     {
-      enabled: !!slug,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
     }
   );
-  if (isLoading) return <Loader />;
+  if (isLoading) {
+    return <div>loading?</div>;
+  }
   if (!data) return <div>User not found</div>;
 
   return (
     <>
       <Head>
-        <title>Username here</title>
+        <title>{data.username}</title>
       </Head>
       <div>
         <p>{data.username}</p>
@@ -30,6 +35,32 @@ const Profile: NextPage = () => {
       </div>
     </>
   );
+};
+
+export async function getStaticProps(
+  context: GetStaticPropsContext<{ slug: string }>
+) {
+  const helpers = createServerSideHelpers({
+    router: appRouter,
+    // hacky way to have a context without auth
+    ctx: createInnerTRPCContext({} as AuthContext),
+    transformer: superjson, // optional - adds superjson serialization
+  });
+  const slug = context.params?.slug as string;
+  // prefetch user
+  await helpers.profiles.getProfile.prefetch({
+    username: slug,
+  });
+  return {
+    props: {
+      trpcState: helpers.dehydrate(),
+      username: slug,
+    },
+  };
+}
+
+export const getStaticPaths = () => {
+  return { paths: [], fallback: "blocking" };
 };
 
 export default Profile;

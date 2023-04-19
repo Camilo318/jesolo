@@ -9,6 +9,7 @@ import CreatePostWizard from "~/components/CreatePostWizard";
 import SessionUI from "~/components/SessionUI";
 import { type RouterOutputs, api } from "~/utils/api";
 import Link from "next/link";
+import Container from "~/components/Container";
 
 dayjs.extend(relativeTime);
 dayjs.extend(updateLocale);
@@ -44,27 +45,25 @@ const Home: NextPage = () => {
         <meta name="description" content="Jesolo feed" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex flex-col items-center">
-        <div className="container relative flex min-h-screen flex-col items-center gap-12 px-4 py-16">
-          <section className="glass relative w-full max-w-3xl flex-grow space-y-4 rounded-xl px-8 py-4">
-            {isLoading ? (
-              <div className="absolute inset-0 flex h-full w-full items-center justify-center">
-                <Loader color="indigo" />
+      <Container>
+        <section className="glass relative w-full max-w-3xl flex-grow space-y-4 rounded-xl px-4 py-4 md:px-8">
+          {isLoading ? (
+            <div className="absolute inset-0 flex h-full w-full items-center justify-center">
+              <Loader color="indigo" />
+            </div>
+          ) : (
+            <>
+              <SessionUI />
+              <CreatePostWizard onSuccess={refetchPosts} />
+              <div className="grid grid-cols-1 justify-items-center gap-4">
+                {data?.map(({ post, author }) => (
+                  <PostView key={post.id} author={author} post={post} />
+                ))}
               </div>
-            ) : (
-              <>
-                <SessionUI />
-                <CreatePostWizard onSuccess={refetchPosts} />
-                <div className="grid grid-cols-1 justify-items-center gap-4">
-                  {data?.map(({ post, author }) => (
-                    <PostView key={post.id} author={author} post={post} />
-                  ))}
-                </div>
-              </>
-            )}
-          </section>
-        </div>
-      </main>
+            </>
+          )}
+        </section>
+      </Container>
     </>
   );
 };
@@ -74,14 +73,16 @@ const PostView = (props: PostWithAuthor) => {
   const { author, post } = props;
   const timeAgo = dayjs(post.createdAt).fromNow(true);
   return (
-    <div className="glass flex w-full items-start gap-2 rounded-xl px-4 py-4">
+    <div className="glass flex w-full items-start gap-2 rounded-xl px-3 py-3">
       <div>
         <Link href={`/${author?.username as string}`}>
-          <Avatar
-            src={author?.profileImageUrl}
-            radius="lg"
-            alt="post's author profile picture"
-          />
+          <div className="overflow-hidden rounded-full">
+            <Avatar
+              src={author?.profileImageUrl}
+              radius="lg"
+              alt="post's author profile picture"
+            />
+          </div>
         </Link>
       </div>
       <div className="flex-1">

@@ -3,8 +3,10 @@ import type { GetStaticPropsContext, InferGetStaticPropsType } from "next";
 import { createServerSideHelpers } from "@trpc/react-query/server";
 import Head from "next/head";
 import superjson from "superjson";
+import { Avatar } from "@mantine/core";
 import { appRouter } from "~/server/api/root";
 import { type AuthContext, createInnerTRPCContext } from "~/server/api/trpc";
+import Container from "~/components/Container";
 import { api } from "~/utils/api";
 
 const Profile = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
@@ -29,10 +31,17 @@ const Profile = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
       <Head>
         <title>{data.username}</title>
       </Head>
-      <div>
-        <p>{data.username}</p>
-        {data.firstName} {data.lastName}
-      </div>
+      <div className="glass absolute inset-x-0 top-0 -z-10 h-[110px]"></div>
+      <Container>
+        <div className="overflow-hidden rounded-full border-4 border-white/60 bg-indigo-400 bg-clip-border shadow-sm">
+          <Avatar size="xl" src={data.profileImageUrl} />
+        </div>
+        <p className="text-indigo-900">
+          <span className="font-semibold">{data.firstName}</span>
+          <> </>
+          <span className="font-light">@{data.username}</span>
+        </p>
+      </Container>
     </>
   );
 };

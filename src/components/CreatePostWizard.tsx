@@ -4,7 +4,7 @@ import { toast } from "react-hot-toast";
 import { api } from "~/utils/api";
 
 const CreatePostWizard = <T,>({ onSuccess }: { onSuccess: () => T }) => {
-  const { isLoaded, isSignedIn, user } = useUser();
+  const { isLoaded, isSignedIn } = useUser();
   const createPost = api.posts.create.useMutation({
     onSuccess: () => onSuccess(),
     onError: (e) => {
@@ -31,10 +31,6 @@ const CreatePostWizard = <T,>({ onSuccess }: { onSuccess: () => T }) => {
 
   return (
     <div className="space-y-4 text-slate-700">
-      <p className="text-center text-base tracking-wide">
-        Hi {user.username}! time to post some emojis 😏
-      </p>
-
       <TextInput
         id="emoji-input"
         label={<span className="text-indigo-600">Emoji</span>}

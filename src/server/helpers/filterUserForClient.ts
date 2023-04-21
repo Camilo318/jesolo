@@ -1,6 +1,6 @@
 import type { User } from "@clerk/nextjs/dist/api";
 
-export const filterUseForClient = (user: User) => {
+export const filterUserForClient = (user: User) => {
   if (!user) {
     throw new Error("No user provided");
   }
@@ -13,4 +13,4 @@ export const filterUseForClient = (user: User) => {
   };
 };
 
-export type filteredUser = ReturnType<typeof filterUseForClient>;
+export type filteredUser = ReturnType<typeof filterUserForClient>;

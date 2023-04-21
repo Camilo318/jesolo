@@ -3,14 +3,14 @@ import { z } from "zod";
 import { clerkClient } from "@clerk/nextjs/server";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
-import { filterUseForClient } from "~/server/helpers/filterUserForClient";
+import { filterUserForClient } from "~/server/helpers/filterUserForClient";
 
 export const profilesRouter = createTRPCRouter({
   //get user by username
   getProfile: publicProcedure
     .input(z.object({ username: z.string() }))
     .query(async ({ input }) => {
-      console.log(input.username);
+      // console.log(input.username);
       const [user] = await clerkClient.users.getUserList({
         username: [input.username],
       });
@@ -22,6 +22,6 @@ export const profilesRouter = createTRPCRouter({
         });
       }
 
-      return filterUseForClient(user);
+      return filterUserForClient(user);
     }),
 });

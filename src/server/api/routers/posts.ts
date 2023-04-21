@@ -9,7 +9,7 @@ import {
 } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import {
-  filterUseForClient,
+  filterUserForClient,
   type filteredUser,
 } from "~/server/helpers/filterUserForClient";
 
@@ -34,7 +34,7 @@ export const postsRouter = createTRPCRouter({
     });
 
     const usersMap = users.reduce((acc: Record<string, filteredUser>, cu) => {
-      acc[cu.id] = filterUseForClient(cu);
+      acc[cu.id] = filterUserForClient(cu);
       return acc;
     }, {});
 
@@ -60,6 +60,25 @@ export const postsRouter = createTRPCRouter({
       };
     });
   }),
+
+  getPostByUserId: publicProcedure
+    .input(
+      z.object({
+        userId: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const post = await ctx.prisma.post.findMany({
+        where: {
+          authorId: input.userId,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+
+      return post;
+    }),
 
   create: protectedProcedure
     .input(

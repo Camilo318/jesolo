@@ -1,15 +1,12 @@
 // import { Loader } from "@mantine/core";
 import type { GetStaticPropsContext, InferGetStaticPropsType } from "next";
-import { createServerSideHelpers } from "@trpc/react-query/server";
 import Head from "next/head";
-import superjson from "superjson";
 import { Avatar, Loader } from "@mantine/core";
-import { appRouter } from "~/server/api/root";
-import { type AuthContext, createInnerTRPCContext } from "~/server/api/trpc";
 import Container from "~/components/Container";
 import { api } from "~/utils/api";
 import PostView from "~/components/Post";
 import { type ReactNode } from "react";
+import { generateSSGHelper } from "~/server/helpers/ssgHelper";
 
 const Profile = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { username } = props;
@@ -24,9 +21,10 @@ const Profile = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
     }
   );
 
-  const { data: userPosts, isLoading } = api.posts.getPostByUserId.useQuery({
-    userId: userData?.id as string,
-  });
+  const { data: postsWithUser, isLoading } =
+    api.posts.getPostsByUserId.useQuery({
+      userId: userData?.id as string,
+    });
 
   if (!userData) return <div>User not found</div>;
 
@@ -47,8 +45,8 @@ const Profile = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
         </p>
         <ProfileFeed>
           {isLoading && <Loader />}
-          {userPosts?.map((post) => (
-            <PostView key={post.id} author={userData} post={post} />
+          {postsWithUser?.map((data) => (
+            <PostView key={data.post.id} author={userData} post={data.post} />
           ))}
         </ProfileFeed>
       </Container>
@@ -67,20 +65,15 @@ const ProfileFeed = ({ children }: { children: ReactNode }) => {
 export async function getStaticProps(
   context: GetStaticPropsContext<{ slug: string }>
 ) {
-  const helpers = createServerSideHelpers({
-    router: appRouter,
-    // hacky way to have a context without auth
-    ctx: createInnerTRPCContext({} as AuthContext),
-    transformer: superjson, // optional - adds superjson serialization
-  });
+  const helper = generateSSGHelper();
   const slug = context.params?.slug as string;
   // prefetch user
-  await helpers.profiles.getProfile.prefetch({
+  await helper.profiles.getProfile.prefetch({
     username: slug,
   });
   return {
     props: {
-      trpcState: helpers.dehydrate(),
+      trpcState: helper.dehydrate(),
       username: slug,
     },
   };

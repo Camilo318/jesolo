@@ -12,12 +12,48 @@ import {
   filterUserForClient,
   type filteredUser,
 } from "~/server/helpers/filterUserForClient";
+import type { Post } from "@prisma/client";
 
+// Create a new ratelimiter, that allows 3 requests per 1 minute
 const ratelimit = new Ratelimit({
   redis: Redis.fromEnv(),
   limiter: Ratelimit.slidingWindow(3, "1 m"),
   analytics: true,
 });
+
+const addUserDataToPosts = async (posts: Post[]) => {
+  const users = await clerkClient.users.getUserList({
+    userId: posts.map((p) => p.authorId),
+  });
+
+  const usersMap = users.reduce((acc: Record<string, filteredUser>, cu) => {
+    acc[cu.id] = filterUserForClient(cu);
+    return acc;
+  }, {});
+
+  return posts.map((post) => {
+    const author = usersMap[post.authorId];
+    if (!author) {
+      console.error("Author not found", post);
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: `Author for post not found. POST ID: ${post.id}, USER ID: ${post.authorId}`,
+      });
+    }
+
+    if (!author.username) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: `Author has no GitHub Account: ${author.id}`,
+      });
+    }
+
+    return {
+      post,
+      author,
+    };
+  });
+};
 
 export const postsRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
@@ -28,47 +64,17 @@ export const postsRouter = createTRPCRouter({
       },
     });
 
-    const users = await clerkClient.users.getUserList({
-      limit: 100,
-      userId: posts.map((post) => post.authorId),
-    });
-
-    const usersMap = users.reduce((acc: Record<string, filteredUser>, cu) => {
-      acc[cu.id] = filterUserForClient(cu);
-      return acc;
-    }, {});
-
-    return posts.map((post) => {
-      const author = usersMap[post.authorId];
-      if (!author) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: `Author for post not found. POST ID: ${post.id}, USER ID: ${post.authorId}`,
-        });
-      }
-
-      if (!author.username) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: `Author has no GitHub Account: ${author.id}`,
-        });
-      }
-
-      return {
-        post,
-        author,
-      };
-    });
+    return await addUserDataToPosts(posts);
   }),
 
-  getPostByUserId: publicProcedure
+  getPostsByUserId: publicProcedure
     .input(
       z.object({
         userId: z.string(),
       })
     )
     .query(async ({ ctx, input }) => {
-      const post = await ctx.prisma.post.findMany({
+      const posts = await ctx.prisma.post.findMany({
         where: {
           authorId: input.userId,
         },
@@ -77,7 +83,7 @@ export const postsRouter = createTRPCRouter({
         },
       });
 
-      return post;
+      return await addUserDataToPosts(posts);
     }),
 
   create: protectedProcedure
@@ -99,5 +105,23 @@ export const postsRouter = createTRPCRouter({
           authorId: ctx.auth.userId,
         },
       });
+    }),
+
+  getById: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const post = await ctx.prisma.post.findUnique({
+        where: {
+          id: input.id,
+        },
+      });
+
+      if (!post) {
+        throw new TRPCError({ code: "NOT_FOUND" });
+      }
+
+      const [postWithUser] = await addUserDataToPosts([post]);
+
+      return postWithUser;
     }),
 });

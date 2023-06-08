@@ -6,7 +6,10 @@ import { api } from "~/utils/api";
 const CreatePostWizard = <T,>({ onSuccess }: { onSuccess: () => T }) => {
   const { isLoaded, isSignedIn } = useUser();
   const createPost = api.posts.create.useMutation({
-    onSuccess: () => onSuccess(),
+    onSuccess: () => {
+      toast.success("Emoji succesfully posted!");
+      onSuccess();
+    },
     onError: (e) => {
       // fieldErrors is a map where keys are the input params ("content" in our case) and the values are arrays with the error messages
       const errors = e.data?.zodError?.fieldErrors.content ?? [];

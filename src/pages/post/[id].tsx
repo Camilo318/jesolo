@@ -1,15 +1,46 @@
-import { type NextPage } from "next";
+import type { InferGetStaticPropsType, GetStaticPropsContext } from "next";
+import Container from "~/components/Container";
+import { api } from "~/utils/api";
+import { generateSSGHelper } from "~/server/helpers/ssgHelper";
 import Head from "next/head";
+import PostView from "~/components/Post";
 
-const Tweet: NextPage = () => {
+const Tweet = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
+  const { id } = props;
+  const { data } = api.posts.getById.useQuery({ id });
+
+  if (!data) return <div>404</div>;
   return (
     <>
       <Head>
-        <title>Jesolo</title>
+        <title>{`${data?.post.content} - ${
+          data?.author.username as string
+        }`}</title>
       </Head>
-      <div>Postview here</div>
+      <Container>
+        <PostView post={data.post} author={data.author} />
+      </Container>
     </>
   );
 };
 
 export default Tweet;
+
+export async function getStaticProps(
+  context: GetStaticPropsContext<{ id: string }>
+) {
+  const ssg = generateSSGHelper();
+  const postId = context.params?.id as string;
+  // prefetch user
+  await ssg.posts.getById.prefetch({ id: postId });
+  return {
+    props: {
+      trpcState: ssg.dehydrate(),
+      id: postId,
+    },
+  };
+}
+
+export const getStaticPaths = () => {
+  return { paths: [], fallback: "blocking" };
+};

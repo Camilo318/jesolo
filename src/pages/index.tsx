@@ -22,13 +22,13 @@ const Home: NextPage = () => {
       </Head>
       <Container>
         <section className="glass relative w-full max-w-3xl flex-grow space-y-4 rounded-xl px-4 py-4 md:px-8">
+          <SessionUI />
           {isLoading ? (
             <div className="absolute inset-0 flex h-full w-full items-center justify-center">
               <Loader color="indigo" />
             </div>
           ) : (
             <>
-              <SessionUI />
               <CreatePostWizard onSuccess={refetchPosts} />
               <div className="grid grid-cols-1 justify-items-center gap-4">
                 {data?.map(({ post, author }) => (

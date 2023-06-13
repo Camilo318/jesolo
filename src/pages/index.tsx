@@ -12,7 +12,9 @@ const Home: NextPage = () => {
     data,
     isLoading,
     refetch: refetchPosts,
-  } = api.posts.getAll.useQuery();
+  } = api.posts.getAll.useQuery(undefined, {
+    refetchOnWindowFocus: false,
+  });
   return (
     <>
       <Head>

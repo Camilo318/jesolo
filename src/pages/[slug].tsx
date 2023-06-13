@@ -22,9 +22,14 @@ const Profile = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
   );
 
   const { data: postsWithUser, isLoading } =
-    api.posts.getPostsByUserId.useQuery({
-      userId: userData?.id as string,
-    });
+    api.posts.getPostsByUserId.useQuery(
+      {
+        userId: userData?.id as string,
+      },
+      {
+        refetchOnWindowFocus: false,
+      }
+    );
 
   if (!userData) return <div>User not found</div>;
 
@@ -65,22 +70,34 @@ const ProfileFeed = ({ children }: { children: ReactNode }) => {
 export async function getStaticProps(
   context: GetStaticPropsContext<{ slug: string }>
 ) {
-  const helper = generateSSGHelper();
+  /* 
+    we are not pre-rendering any static pages at build time
+    so this function will be called before initial render
+   */
+
+  const ssg = generateSSGHelper();
   const slug = context.params?.slug as string;
+
+  if (typeof slug !== "string") throw new Error("no slug");
+
   // prefetch user
-  await helper.profiles.getProfile.prefetch({
+  await ssg.profiles.getProfile.prefetch({
     username: slug,
   });
   return {
     props: {
-      trpcState: helper.dehydrate(),
+      trpcState: ssg.dehydrate(),
       username: slug,
     },
   };
 }
 
 export const getStaticPaths = () => {
+  // we don't pre-render any paths at build time
+  // we defer generating all pages on-demand by returning an empty array for paths
   return { paths: [], fallback: "blocking" };
+  // will server-render pages on-demand if the path doesn't exist
+  // future requests will serve the static file from the cache
 };
 
 export default Profile;

@@ -7,7 +7,16 @@ import PostView from "~/components/Post";
 
 const Tweet = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { id } = props;
-  const { data } = api.posts.getById.useQuery({ id });
+  const { data, isLoading } = api.posts.getById.useQuery(
+    { id },
+    {
+      refetchOnWindowFocus: false,
+    }
+  );
+
+  if (isLoading) {
+    console.log("Loading!!");
+  }
 
   if (!data) return <div>404</div>;
   return (

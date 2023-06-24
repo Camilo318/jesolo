@@ -23,7 +23,7 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Container>
-        <section className="glass relative flex min-h-0 w-full max-w-3xl flex-grow flex-col gap-4 rounded-xl px-4 py-4 md:px-8">
+        <section className="glass relative flex min-h-0 w-full max-w-3xl flex-grow flex-col gap-4 px-4 py-4 md:px-8">
           <SessionUI />
           {isLoading ? (
             <div className="absolute inset-0 flex h-full w-full items-center justify-center">
@@ -32,7 +32,7 @@ const Home: NextPage = () => {
           ) : (
             <>
               <CreatePostWizard onSuccess={refetchPosts} />
-              <div className="grid min-h-0 flex-1 grid-cols-1 justify-items-center gap-4 overflow-auto pr-5">
+              <div className="grid min-h-0 flex-1 grid-cols-1 justify-items-center gap-4 overflow-auto">
                 {data?.map(({ post, author }) => (
                   <PostView key={post.id} author={author} post={post} />
                 ))}

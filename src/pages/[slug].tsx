@@ -38,7 +38,7 @@ const Profile = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
       <Head>
         <title>{userData.username}</title>
       </Head>
-      <div className="glass absolute inset-x-0 top-0 -z-10 h-20"></div>
+      <div className="glass absolute inset-x-0 top-0 -z-10 h-14"></div>
       <Container>
         <div className="overflow-hidden rounded-full border-4 border-white/60 bg-indigo-400 bg-clip-border shadow-sm">
           <Avatar size="xl" src={userData.profileImageUrl} />
@@ -61,7 +61,7 @@ const Profile = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
 
 const ProfileFeed = ({ children }: { children: ReactNode }) => {
   return (
-    <div className="grid min-h-0 w-full max-w-3xl flex-1 grid-cols-1 justify-items-center gap-4 overflow-auto pr-5">
+    <div className="grid min-h-0 w-full max-w-3xl flex-1 grid-cols-1 justify-items-center gap-4 overflow-auto pb-8">
       {children}
     </div>
   );
